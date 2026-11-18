@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Diet Plan Analyzer</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head><body><main class="page">
+<header class="hero"><div class="mark">N</div><p class="eyebrow">SMART NUTRITION ASSISTANT</p>
+<h1>AI Diet Plan Analyzer</h1><p class="intro">Calculate BMI, estimate daily calories and explore simple meal suggestions.</p></header>
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}
+<div class="notice {{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+<div class="layout"><section class="card"><p class="eyebrow">GET STARTED</p><h2>Your Details</h2>
+<form method="POST">
+<label>Name</label><input name="name" placeholder="Enter your name">
+<div class="fields">
+<div><label>Age (years)</label><input name="age" type="number" min="1" max="100" required placeholder="21"></div>
+<div><label>Sex for calorie estimate</label><select name="gender"><option>Male</option><option>Female</option></select></div>
+<div><label>Weight (kg)</label><input name="weight" type="number" min="20" max="300" step="0.1" required placeholder="70"></div>
+<div><label>Height (cm)</label><input name="height" type="number" min="100" max="230" step="0.1" required placeholder="175"></div></div>
+<label>Activity Level</label><select name="activity"><option value="Low">Low – little exercise</option><option value="Moderate" selected>Moderate – some weekly activity</option><option value="High">High – frequent exercise</option></select>
+<label>Fitness Goal</label><select name="goal"><option>Maintain weight</option><option>Weight loss</option><option>Weight gain</option></select>
+<button type="submit">Analyze My Details <span>→</span></button></form></section>
+<section class="right">
+{% if result %}<section class="card"><p class="eyebrow">YOUR ANALYSIS</p><h2>Hello, {{ result.name }}!</h2>
+<div class="metrics"><div class="metric"><span>BMI</span><strong>{{ result.bmi }}</strong><small>{{ result.category }}</small></div>
+<div class="metric"><span>Daily calorie estimate</span><strong>{{ result.calories }}</strong><small>kcal / day</small></div></div>
+<p class="goal">Selected goal: <b>{{ result.goal }}</b></p><h3>Suggested Daily Meals</h3>
+<div class="meals">{% for meal, suggestion in result.meals.items() %}<div class="meal"><b>{{ meal }}</b><p>{{ suggestion }}</p></div>{% endfor %}</div></section>
+{% else %}<section class="card welcome"><div class="salad">🥗</div><p class="eyebrow">HOW IT WORKS</p><h2>Your wellness overview starts here.</h2><p>Enter your details to receive a BMI result, estimated calorie target and meal ideas.</p><p class="muted">01 Enter details　 02 Analyze　 03 View suggestions</p></section>{% endif %}
+<section class="card"><p class="eyebrow">LOCAL RECORDS</p><h2>Recent History</h2>
+{% if history %}<div class="table-wrap"><table><thead><tr><th>Name</th><th>BMI</th><th>Goal</th><th>Calories</th></tr></thead><tbody>
+{% for row in history %}<tr><td>{{ row.name }}</td><td>{{ row.bmi }}<small>{{ row.category }}</small></td><td>{{ row.goal }}</td><td>{{ row.calories }}</td></tr>{% endfor %}
+</tbody></table></div><form method="POST" action="{{ url_for('clear_history') }}"><button class="clear" type="submit">Clear History</button></form>
+{% else %}<p class="muted">Saved analyses will appear here after your first calculation.</p>{% endif %}</section></section></div>
+<footer>Educational demonstration only. BMI and calorie values are estimates, not medical advice.</footer>
+</main></body></html>
